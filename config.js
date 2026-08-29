@@ -1,30 +1,25 @@
 /**
- * BADDY BUDDIES — Tuesday Group Config
- * ──────────────────────────────────────
+ * Baddy Buddies - Tuesday Group Config
+ * ─────────────────────────────────────────
  * Rename this file to config.js in your deployment folder.
  * Never edit index.html — only this file needs to change per group.
- *
- * SETUP STEPS:
- * 1. Create a new Supabase project for this group
- * 2. Run supabase-setup.sql in the new project's SQL Editor
- * 3. Replace supabaseUrl and supabaseKey below with the new project's values
- * 4. Deploy index.html + this file (renamed to config.js) to a new GitHub Pages repo
  */
 window.APP_CONFIG = {
 
   // ── Identity ──────────────────────────────────────────────
   clubName:  'Baddy Buddies',
-  groupName: 'Tuesday Group',
+  groupName: 'Tuesday Group',       // shown under club name in nav
 
   // ── Supabase credentials ───────────────────────────────────
-  // ⚠️  Replace with your NEW Supabase project credentials
-  supabaseUrl: 'https://YOUR_NEW_PROJECT.supabase.co',
-  supabaseKey: 'YOUR_NEW_ANON_KEY',
+  // Get these from: Supabase project → Settings → API
+  supabaseUrl: 'https://fhvpihdirybyhkbzgktd.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodnBpaGRpcnlieWhrYnpna3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5Nzk3NDUsImV4cCI6MjEwMzU1NTc0NX0.-BFHk1CZhKefjw92y6NVgQOG4MGDNpu6rdLuDsVgNf4',
 
   // ── Finance defaults ───────────────────────────────────────
+  // These are fallback values — app_settings in the database takes precedence
   casualFee:  11,
   sessionPin: '2055',
-  financePin: '2055',
+  financePinr: '2055',
 
   // ── Theme — WHITE / EMERALD / CORAL ────────────────────────
   // Clean, high-contrast, light — completely distinct from SS dark gold
@@ -73,3 +68,5 @@ window.APP_CONFIG = {
     navTabHoverBg:      'rgba(5,150,105,.06)',  // subtle emerald on hover
   },
 };
+
+  
