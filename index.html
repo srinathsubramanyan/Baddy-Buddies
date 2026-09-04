@@ -135,8 +135,8 @@ nav{background:var(--nav-bg);border-bottom:2px solid var(--nav-border);padding:0
 .fin-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px;}
 .fin-card h3{font-family:'Bebas Neue',cursive;font-size:1.15rem;font-weight:400;color:var(--accent);letter-spacing:.07em;margin-bottom:13px;}
 .fin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:13px;}
-.fin-stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;}
-.fin-stat .num{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;color:var(--green);}
+.fin-stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;min-width:0;overflow:hidden;}
+.fin-stat .num{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;color:var(--green);overflow-wrap:break-word;word-break:break-word;}
 .fin-stat .lbl{font-size:0.72rem;color:var(--mid);margin-top:2px;}
 .tbl{width:100%;border-collapse:collapse;font-size:0.83rem;}
 .tbl th{text-align:left;font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);padding:0 9px 9px;border-bottom:1px solid var(--accent);}
@@ -177,9 +177,14 @@ nav{background:var(--nav-bg);border-bottom:2px solid var(--nav-border);padding:0
 .mpill:hover:not(.sel){border-color:#999;}
 .inline-num{width:76px;padding:5px 7px;border:1.5px solid var(--border);border-radius:6px;font-size:0.82rem;outline:none;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
 .inline-num:focus{border-color:var(--accent);}
+.stock-summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+@media(min-width:420px){.stock-summary-grid{grid-template-columns:repeat(4,1fr);}}
+.usage-log-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:8px;}
+.usage-log-grid .btn{width:100%;justify-content:center;}
+@media(min-width:520px){.usage-log-grid{grid-template-columns:1fr 80px 1.3fr auto;align-items:end;}.usage-log-grid .btn{width:auto;}}
 .wa-wrap{background:#ECE5DD;border-radius:11px;padding:14px;margin-bottom:11px;border:1px solid #D4CCC5;}
 .wa-bubble{background:#fff;color:#111;border-radius:7px 7px 7px 2px;padding:9px 11px;max-width:92%;display:inline-block;box-shadow:0 1px 2px rgba(0,0,0,.1);white-space:pre-wrap;font-family:'Segoe UI',sans-serif;font-size:0.82rem;line-height:1.55;}
-@media(max-width:460px){.stats-row{gap:7px;}.stat-num{font-size:1.15rem;}.actions{gap:5px;}.btn{padding:7px 10px;font-size:0.78rem;}}
+@media(max-width:460px){.stats-row{gap:7px;}.stat-num{font-size:1.15rem;}.actions{gap:5px;}.btn{padding:7px 10px;font-size:0.78rem;}.fin-grid{gap:7px;}.fin-stat{padding:9px;}.fin-stat .num{font-size:1.05rem;}}
 
 /* ── TOURNAMENT ─────────────────────────────────────────────── */
 .t-hero{background:linear-gradient(135deg,var(--dark) 0%,var(--card) 100%);border:2px solid var(--accent);border-radius:14px;padding:22px 18px;margin-bottom:18px;color:white;position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(212,160,23,.2);}
@@ -422,7 +427,7 @@ nav{background:var(--nav-bg);border-bottom:2px solid var(--nav-border);padding:0
     <div class="frow"><label>Select members</label><div class="pill-row" id="mpills"></div></div>
     <div class="frow">
       <label>Or add a guest</label>
-      <div style="display:flex;gap:7px"><input type="text" id="guest-in" placeholder="Guest name" style="flex:1"><button class="btn btn-ghost btn-sm" onclick="addGuest()">Add</button></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap"><input type="text" id="guest-in" placeholder="Guest name" style="flex:1;min-width:120px"><select id="guest-invited-by" style="flex:1;min-width:120px"></select><button class="btn btn-ghost btn-sm" onclick="addGuest()">Add</button></div>
     </div>
     <div class="frow"><label>Status</label>
       <select id="p-status">
@@ -549,6 +554,25 @@ nav{background:var(--nav-bg);border-bottom:2px solid var(--nav-border);padding:0
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="closeModal('m-credit')">Cancel</button>
       <button class="btn btn-lime" onclick="saveCasualCredit()">Save Credit</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- INTER-CLUB SALE MODAL -->
+<div class="overlay" id="m-sale">
+  <div class="modal">
+    <h3>🤝 Record Tube Sale</h3>
+    <p style="font-size:.83rem;color:var(--muted);margin-bottom:14px">Tubes sold to another club. Stock will decrease and the amount is credited to the pool.</p>
+    <div class="frow"><label>Date</label><input type="date" id="sale-date"></div>
+    <div class="frow"><label>Buyer (club / person)</label><input type="text" id="sale-buyer" placeholder="e.g. Baddy Buddies"></div>
+    <div class="fgrid">
+      <div class="frow"><label>No. of Tubes</label><input type="number" id="sale-tubes" value="1" min="1" step="1"></div>
+      <div class="frow"><label>Amount Received (A$)</label><input type="number" id="sale-amount" placeholder="0.00" min="0" step="0.50"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('m-sale')">Cancel</button>
+      <button class="btn btn-lime" onclick="saveSale()">Record Sale</button>
     </div>
   </div>
 </div>
@@ -704,7 +728,7 @@ function setLoading(on) {
 async function boot() {
   setLoading(true);
   try {
-    const [members, sessions, feePayments, sessionCosts, shuttleCosts, tournaments, appSettings, casualPayments, shuttleUsage] = await Promise.all([
+    const [members, sessions, feePayments, sessionCosts, shuttleCosts, tournaments, appSettings, casualPayments, shuttleUsage, shuttleSales] = await Promise.all([
       sb('members?order=name'),
       sb('sessions?order=date'),
       sb('fee_payments?order=id'),
@@ -714,6 +738,7 @@ async function boot() {
       sb('app_settings?order=key'),
       sb('casual_payments?order=id'),
       sb('shuttle_usage?order=date'),
+      sb('shuttle_sales?order=date.desc'),
     ]);
 
     // sessions need their players loaded too
@@ -728,6 +753,7 @@ async function boot() {
     S.members        = members || [];
     S.casualPayments = casualPayments || [];
     S.shuttleUsage   = (shuttleUsage || []);
+    S.shuttleSales   = (shuttleSales  || []);
     S.feePayments  = feePayments || [];
     S.shuttleCosts = (shuttleCosts || []).map(c => ({
       ...c, desc: c.description||c.desc||'', month: (c.date||'').slice(0,7), tubes: c.tubes||0
@@ -760,6 +786,7 @@ async function boot() {
         status: p.status,
         member: !!p.member_id,
         player_row_id: p.id,
+        invited_by_member_id: p.invited_by_member_id || null,
       }))
     }));
 
@@ -931,6 +958,12 @@ function availableQuarters() {
   return [...new Set(result)];
 }
 function initials(name) { return name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase(); }
+function memberNameById(id) { const m=S.members.find(x=>x.id===id); return m ? m.name : null; }
+function guestTag(p){
+  if(p.member || !p.invited_by_member_id) return '';
+  const inviter=memberNameById(p.invited_by_member_id);
+  return inviter ? '<span style="color:var(--muted);font-size:.7rem"> · via '+inviter+'</span>' : '';
+}
 
 // Returns true if a permanent member was active on a given date
 function isMemberActiveOn(member, dateStr) {
@@ -1036,9 +1069,10 @@ function memberRunningBalance(member){
 function poolBalance(){
   const totalIn=S.feePayments.reduce((a,p)=>a+p.amount,0);
   const casualIn=(S.casualPayments||[]).reduce((a,p)=>a+p.amount,0);
+  const salesIn=(S.shuttleSales||[]).reduce((a,s)=>a+s.amount,0);
   const totalCourt=Object.values(S.sessionCosts||{}).reduce((a,v)=>a+v,0);
   const totalShuttle=S.shuttleCosts.reduce((a,c)=>a+c.amount,0);
-  return totalIn+casualIn-totalCourt-totalShuttle;
+  return totalIn+casualIn+salesIn-totalCourt-totalShuttle;
 }
 
 // All-time credits paid by a casual member (sum of all top-ups ever)
@@ -1101,7 +1135,7 @@ function buildSessionCard(s){
   const fill=Math.min(100,Math.round(going.length/s.maxPlayers*100));
   const bc=s.status==='closed'?'b-closed':spots===0?'b-full':'b-open';
   const bt=s.status==='closed'?'Closed':spots===0?'Full':'Open';
-  const chipGroup=(arr,cls)=>arr.map(p=>'<div class="chip '+cls+'"><div class="av">'+initials(p.name)+'</div>'+p.name+'<button class="chip-x" onclick="doRemovePlayer('+s.id+','+(p.player_row_id||p.id)+')">×</button></div>').join('');
+  const chipGroup=(arr,cls)=>arr.map(p=>'<div class="chip '+cls+'"><div class="av">'+initials(p.name)+'</div>'+p.name+guestTag(p)+'<button class="chip-x" onclick="doRemovePlayer('+s.id+','+(p.player_row_id||p.id)+')">×</button></div>').join('');
   const closeBtn=s.status==='open'
     ?'<button class="btn btn-red btn-sm" onclick="doCloseSession('+s.id+')">🔒 Close</button>'
     :'<button class="btn btn-ghost btn-sm" onclick="doReopenSession('+s.id+')">🔓 Reopen</button>';
@@ -1219,6 +1253,8 @@ function doOpenAddPlayer(sid){
     ?avail.map(m=>'<div class="mpill" onclick="togglePill(this)" data-id="'+m.id+'" data-name="'+m.name+'" data-type="'+m.type+'">'+m.name+' <span class="mtype mtype-'+(m.type==='permanent'?'perm':'cas')+'">'+(m.type==='permanent'?'Perm':'Casual')+'</span></div>').join('')
     :'<span style="color:var(--mid);font-size:.83rem">All members added</span>';
   document.getElementById('guest-in').value='';
+  document.getElementById('guest-invited-by').innerHTML='<option value="">— Invited by —</option>'
+    +S.members.map(m=>'<option value="'+m.id+'">'+m.name+'</option>').join('');
   openModal('m-player');
 }
 function togglePill(el){
@@ -1230,11 +1266,16 @@ function togglePill(el){
 function addGuest(){
   const name=document.getElementById('guest-in').value.trim();
   if(!name)return;
-  _pending.push({id:Date.now()+Math.random(),name,type:'casual',member:false});
+  const invitedByEl=document.getElementById('guest-invited-by');
+  const invitedById=invitedByEl.value;
+  if(!invitedById){showToast('Select who invited this guest');return;}
+  const inviterName=invitedByEl.options[invitedByEl.selectedIndex].textContent;
+  _pending.push({id:Date.now()+Math.random(),name,type:'casual',member:false,invited_by_member_id:parseInt(invitedById,10)});
   const el=document.createElement('div');
-  el.className='mpill sel'; el.textContent=name+' (guest)';
+  el.className='mpill sel'; el.textContent=name+' (guest, via '+inviterName+')';
   document.getElementById('mpills').appendChild(el);
   document.getElementById('guest-in').value='';
+  invitedByEl.value='';
   showToast(name+' staged');
 }
 async function confirmPlayers(){
@@ -1244,7 +1285,7 @@ async function confirmPlayers(){
   try{
     for(const p of _pending){
       if(s.players.find(x=>x.id===p.id))continue;
-      const payload={session_id:_curSid,name:p.name,type:p.type||'casual',status,member_id:p.member?p.id:null};
+      const payload={session_id:_curSid,name:p.name,type:p.type||'casual',status,member_id:p.member?p.id:null,invited_by_member_id:p.invited_by_member_id||null};
       const rows=await sb('session_players','POST',payload);
       s.players.push({...p,status,player_row_id:rows[0].id});
     }
@@ -1286,10 +1327,10 @@ function renderRSVP(){
   const spots=Math.max(0,s.maxPlayers-going.length);
   const fill=Math.min(100,Math.round(going.length/s.maxPlayers*100));
   let memberOptions=S.members.map(m=>'<option value="'+m.id+'">'+m.name+' ('+(m.type==='permanent'?'Permanent':'Casual')+')</option>').join('');
-  let goingChips=going.map(p=>'<div class="chip going"><div class="av">'+initials(p.name)+'</div>'+p.name+'</div>').join('');
-  let maybeChips=maybe.map(p=>'<div class="chip maybe"><div class="av">'+initials(p.name)+'</div>'+p.name+'</div>').join('');
+  let goingChips=going.map(p=>'<div class="chip going"><div class="av">'+initials(p.name)+'</div>'+p.name+guestTag(p)+'</div>').join('');
+  let maybeChips=maybe.map(p=>'<div class="chip maybe"><div class="av">'+initials(p.name)+'</div>'+p.name+guestTag(p)+'</div>').join('');
   const notgoing=s.players.filter(p=>p.status==='notgoing');
-  let notgoingChips=notgoing.map(p=>'<div class="chip notgoing"><div class="av">'+initials(p.name)+'</div>'+p.name+'</div>').join('');
+  let notgoingChips=notgoing.map(p=>'<div class="chip notgoing"><div class="av">'+initials(p.name)+'</div>'+p.name+guestTag(p)+'</div>').join('');
   // Who hasn't voted yet — members not in any response list
   const respondedIds=new Set(s.players.map(p=>p.id));
   const notVoted=S.members.filter(m=>!respondedIds.has(m.id));
@@ -1303,7 +1344,10 @@ function renderRSVP(){
   el.innerHTML='<div class="rsvp-hero"><h1>🏸 Are you in?</h1><p>'+fmtDate(s.date)+' · '+s.time+' · '+s.venue+'</p>'+(s.notes?'<p style="margin-top:5px;font-size:.8rem">📌 '+s.notes+'</p>':'')+'</div>'
     +'<div class="rsvp-card"><h3 style="font-family:Bebas Neue,cursive;color:var(--accent);letter-spacing:.05em;font-size:1.1rem">Your RSVP</h3>'
     +'<div class="frow"><label>Your name</label><select id="rsvp-sel" onchange="toggleGuestRow()"><option value="">— Select your name —</option>'+memberOptions+'<option value="guest">I\'m a guest</option></select></div>'
-    +'<div class="frow" id="guest-rsvp-row" style="display:none"><label>Guest name</label><input type="text" id="rsvp-guest" placeholder="Enter your name"></div>'
+    +'<div class="frow" id="guest-rsvp-row" style="display:none">'
+    +  '<label>Guest name</label><input type="text" id="rsvp-guest" placeholder="Enter your name">'
+    +  '<label style="margin-top:9px">Invited by</label><select id="rsvp-invited-by"><option value="">— Who invited you? —</option>'+memberOptions+'</select>'
+    +'</div>'
     +'<div class="sec-lbl" style="margin-bottom:9px">Status</div>'
     +'<div class="rsvp-opts"><div class="rsvp-opt sel-going" id="ro-going" onclick="selRSVP(this,\'going\')"><div class="emo">✅</div><div class="lbl">Going</div></div><div class="rsvp-opt" id="ro-no" onclick="selRSVP(this,\'notgoing\')"><div class="emo">❌</div><div class="lbl">Can\'t make it</div></div></div>'
     +'<button class="btn btn-lime" style="width:100%;justify-content:center" onclick="submitRSVP('+s.id+')">Confirm RSVP</button></div>'
@@ -1321,10 +1365,13 @@ async function submitRSVP(sid){
   const s=S.sessions.find(x=>x.id===sid);
   const sel=document.getElementById('rsvp-sel');
   if(!sel.value){showToast('Select your name');return;}
-  let id,name,type,member;
+  let id,name,type,member,invitedById=null;
   if(sel.value==='guest'){
     name=document.getElementById('rsvp-guest').value.trim();
     if(!name){showToast('Enter your name');return;}
+    invitedById=document.getElementById('rsvp-invited-by').value;
+    if(!invitedById){showToast('Select who invited you');return;}
+    invitedById=parseInt(invitedById,10);
     id=Date.now();type='casual';member=false;
   }else{
     const m=S.members.find(x=>x.id==sel.value);
@@ -1337,9 +1384,9 @@ async function submitRSVP(sid){
       await sb('session_players?id=eq.'+existing.player_row_id,'PATCH',{status:_rsvpStatus});
       existing.status=_rsvpStatus;
     }else{
-      const payload={session_id:sid,name,type,status:_rsvpStatus,member_id:member?id:null};
+      const payload={session_id:sid,name,type,status:_rsvpStatus,member_id:member?id:null,invited_by_member_id:invitedById};
       const rows=await sb('session_players','POST',payload);
-      s.players.push({id,name,type,status:_rsvpStatus,member,player_row_id:rows[0].id});
+      s.players.push({id,name,type,status:_rsvpStatus,member,player_row_id:rows[0].id,invited_by_member_id:invitedById});
     }
     renderRSVP(); showToast('RSVP saved for '+name+' ✅');
   }catch(e){showToast('Error saving RSVP');}
@@ -1449,7 +1496,7 @@ function _buildCasualRows(casualList, q) {
       + '<td style="font-size:.83rem;color:var(--accent)">A$' + c.qCost.toFixed(2) + '<div style="font-size:.7rem;color:var(--muted)">' + c.allSessions + ' sessions all-time</div></td>'
       + '<td style="font-size:.83rem">A$' + c.allCredits.toFixed(2) + '<div style="font-size:.7rem;color:var(--muted)">all-time credit</div></td>'
       + '<td>' + balLabel + '</td>'
-      + '<td style="display:flex;gap:5px">'
+      + '<td style="display:flex;gap:5px;flex-wrap:wrap">'
       + '<button class="btn btn-lime btn-sm" onclick="openAddCredit(' + c.id + ',\'' + c.name.replace(/'/g, "\\'") + '\')">＋ Credit</button>'
       + '<button class="btn btn-red btn-sm" onclick="doRemoveMember(' + c.id + ')">✕</button>'
       + '</td></tr>';
@@ -1462,7 +1509,8 @@ function _buildGuestRows(guestList, q) {
     return '<tr>'
       + '<td><strong>' + g.name + '</strong>'
       + '<span style="margin-left:6px;font-size:.68rem;background:var(--border);color:var(--muted);padding:1px 6px;border-radius:8px">guest</span>'
-      + '<div style="font-size:.72rem;color:var(--muted)">' + g.sessions.map(function(d){ return fmtShort(d); }).join(', ') + '</div></td>'
+      + '<div style="font-size:.72rem;color:var(--muted)">' + g.sessions.map(function(d){ return fmtShort(d); }).join(', ') + '</div>'
+      + (g.invitedBy ? '<div style="font-size:.72rem;color:var(--muted)">via ' + g.invitedBy + '</div>' : '') + '</td>'
       + '<td>' + g.sessions.length + '</td>'
       + '<td style="font-weight:600;color:var(--accent)">A$' + g.totalOwed.toFixed(2) + '</td>'
       + '<td style="color:' + (g.totalPaid > 0 ? 'var(--accent)' : 'var(--muted)') + '">A$' + g.totalPaid.toFixed(2) + '</td>'
@@ -1517,7 +1565,7 @@ function renderFinance(){
           var guestPaid = (S.casualPayments||[])
             .filter(function(cp){ return cp.member_id===p.id && cp.quarter===q; })
             .reduce(function(a,cp){ return a+cp.amount; }, 0);
-          guestMap[key] = {id:p.id, name:p.name, sessions:[], totalOwed:0, totalPaid:guestPaid};
+          guestMap[key] = {id:p.id, name:p.name, sessions:[], totalOwed:0, totalPaid:guestPaid, invitedBy:memberNameById(p.invited_by_member_id)};
         }
         guestMap[key].sessions.push(s.date);
         guestMap[key].totalOwed += CASUAL_FEE;
@@ -1579,7 +1627,7 @@ function renderFinance(){
 
     // Casual members + guests
     + '<div class="fin-card">'
-    +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">'
+    +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px">'
     +     '<h3 style="margin:0">🎟️ Casual Members · A$'+CASUAL_FEE.toFixed(2)+'/session</h3>'
     +     '<button class="btn btn-ghost btn-sm" onclick="openAddMember()">＋ Add Casual</button>'
     +   '</div>'
@@ -1597,15 +1645,15 @@ function renderFinance(){
     +   (guestList.length
         ? '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">'
           +   '<div style="font-family:Bebas Neue,cursive;font-size:.9rem;color:var(--muted);letter-spacing:.08em;margin-bottom:10px">👤 GUEST PLAYERS THIS QUARTER</div>'
-          +   '<table class="tbl"><thead><tr><th>Name</th><th>Sessions</th><th>Owed</th><th>Received</th><th></th></tr></thead>'
-          +   '<tbody>' + guestRows + '</tbody></table>'
+          +   '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Name</th><th>Sessions</th><th>Owed</th><th>Received</th><th></th></tr></thead>'
+          +   '<tbody>' + guestRows + '</tbody></table></div>'
           + '</div>'
         : '')
     + '</div>'
 
     // Permanent member balances
     + '<div class="fin-card">'
-    +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">'
+    +   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px">'
     +     '<h3 style="margin:0">👥 Permanent Members</h3>'
     +     '<button class="btn btn-ghost btn-sm" onclick="openAddMember()">＋ Add Member</button>'
     +   '</div>'
@@ -2013,8 +2061,9 @@ async function renderShuttles() {
   // Stock calculation
   const totalBought = S.shuttleCosts.reduce((a,c) => a + (c.tubes||0), 0);
   const totalUsed   = (S.shuttleUsage||[]).reduce((a,u) => a + (u.tubes_opened||0), 0);
-  const stockLeft   = totalBought - totalUsed;
-  const stockPct    = totalBought > 0 ? Math.min(100, Math.round(stockLeft/totalBought*100)) : 0;
+  const totalSold   = (S.shuttleSales||[]).reduce((a,s) => a + (s.tubes||0), 0);
+  const stockLeft   = totalBought - totalUsed - totalSold;
+  const stockPct    = totalBought > 0 ? Math.max(0, Math.min(100, Math.round(stockLeft/totalBought*100))) : 0;
   const stockColor  = stockLeft <= 3 ? 'var(--red)' : stockLeft <= 8 ? '#E05A00' : '#D4A017';
 
   // Purchase history
@@ -2041,9 +2090,10 @@ async function renderShuttles() {
     // Stock summary card
     '<div class="fin-card">'
     +'<h3>📦 Stock Summary</h3>'
-    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">'
+    +'<div class="stock-summary-grid">'
     +'<div class="fin-stat"><div class="num" style="color:var(--accent)">'+totalBought+'</div><div class="lbl">Tubes Bought</div></div>'
     +'<div class="fin-stat"><div class="num" style="color:var(--accent2)">'+totalUsed+'</div><div class="lbl">Tubes Used</div></div>'
+    +'<div class="fin-stat"><div class="num" style="color:#8B5CF6">'+totalSold+'</div><div class="lbl">Tubes Sold</div></div>'
     +'<div class="fin-stat"><div class="num" style="color:'+stockColor+'">'+stockLeft+'</div><div class="lbl">In Stock</div></div>'
     +'</div>'
     +'<div style="margin-bottom:6px;font-size:.75rem;color:var(--muted);display:flex;justify-content:space-between"><span>Stock level</span><span style="color:'+stockColor+'">'+stockPct+'%</span></div>'
@@ -2053,29 +2103,54 @@ async function renderShuttles() {
 
     // Log usage card
     +'<div class="fin-card">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px">'
     +'<h3 style="margin:0">📋 Log Usage</h3>'
     +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 80px 1fr auto;gap:8px;align-items:end;margin-bottom:8px">'
+    +'<div class="usage-log-grid">'
     +'<div><label style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Date</label>'
     +'<input type="date" id="u-date" value="'+new Date().toISOString().split('T')[0]+'" style="width:100%;padding:8px;border:1.5px solid #2C3E52;border-radius:7px;background:var(--bg);color:var(--text);font-size:.85rem;outline:none"></div>'
     +'<div><label style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Tubes</label>'
     +'<input type="number" id="u-tubes" min="1" max="20" value="1" style="width:100%;padding:8px;border:1.5px solid #2C3E52;border-radius:7px;background:var(--bg);color:var(--text);font-size:.85rem;text-align:center;outline:none"></div>'
     +'<div><label style="font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Notes (optional)</label>'
     +'<input type="text" id="u-notes" placeholder="e.g. Regular session" style="width:100%;padding:8px;border:1.5px solid #2C3E52;border-radius:7px;background:var(--bg);color:var(--text);font-size:.85rem;outline:none"></div>'
-    +'<button class="btn btn-lime" onclick="saveUsage()" style="margin-bottom:0;white-space:nowrap">+ Log</button>'
+    +'<button class="btn btn-lime" onclick="saveUsage()">+ Log</button>'
     +'</div>'
     +'</div>'
 
     // Purchase history
     +'<div class="fin-card">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px">'
     +'<h3 style="margin:0">🛒 Purchases</h3>'
     +'<button class="btn btn-ghost btn-sm" onclick="doOpenShuttle()">＋ Add Purchase</button>'
     +'</div>'
     +(S.shuttleCosts.length
       ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Date</th><th>Description</th><th style="text-align:center">Tubes</th><th>Cost</th><th>$/tube</th><th></th></tr></thead><tbody>'+purchaseRows+'</tbody></table></div>'
       : '<p style="color:var(--mid);font-size:.83rem">No purchases recorded yet</p>')
+    +'</div>'
+
+    // Inter-club sales section
+    +'<div class="fin-card">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:8px">'
+    +'<h3 style="margin:0">🤝 Inter-Club Sales</h3>'
+    +'<button class="btn btn-ghost btn-sm" onclick="doOpenSale()">＋ Record Sale</button>'
+    +'</div>'
+    +((S.shuttleSales||[]).length
+      ? '<div style="overflow-x:auto"><table class="tbl">'
+        +'<thead><tr><th>Date</th><th>Buyer</th><th>Tubes</th><th>Amount</th><th>$/tube</th><th></th></tr></thead>'
+        +'<tbody>'
+        +(S.shuttleSales||[]).map(s=>
+          '<tr>'
+          +'<td style="font-size:.8rem;white-space:nowrap">'+s.date+'</td>'
+          +'<td style="font-weight:600;word-break:break-word;max-width:110px">'+s.buyer+'</td>'
+          +'<td style="text-align:center;color:var(--muted)">'+s.tubes+'</td>'
+          +'<td style="font-weight:600;color:var(--accent)">A$'+s.amount.toFixed(2)+'</td>'
+          +'<td style="color:var(--muted);font-size:.8rem">'+(s.tubes>0?'A$'+(s.amount/s.tubes).toFixed(2):'—')+'</td>'
+          +'<td><button class="btn btn-red btn-sm" style="padding:3px 7px" onclick="doDeleteSale('+s.id+')">✕</button></td>'
+          +'</tr>'
+        ).join('')
+        +'</tbody></table></div>'
+        +'<div style="margin-top:8px;font-size:.76rem;color:var(--muted)">Total sold: <strong style="color:var(--accent)">'+totalSold+' tubes · A$'+(S.shuttleSales||[]).reduce((a,s)=>a+s.amount,0).toFixed(2)+'</strong> — credited to pool balance.</div>'
+      : '<p style="color:var(--muted);font-size:.83rem">No inter-club sales recorded.</p>')
     +'</div>'
 
     // Usage history
@@ -2085,6 +2160,45 @@ async function renderShuttles() {
       ? '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Date</th><th style="text-align:center">Tubes</th><th>Notes</th><th></th></tr></thead><tbody>'+usageRows+'</tbody></table></div>'
       : '<p style="color:var(--mid);font-size:.83rem">No usage logged yet</p>')
     +'</div>';
+}
+
+
+function doOpenSale() {
+  document.getElementById('sale-date').value  = new Date().toISOString().split('T')[0];
+  document.getElementById('sale-buyer').value  = '';
+  document.getElementById('sale-tubes').value  = '1';
+  document.getElementById('sale-amount').value = '';
+  openModal('m-sale');
+}
+
+async function saveSale() {
+  const date   = document.getElementById('sale-date').value;
+  const buyer  = document.getElementById('sale-buyer').value.trim();
+  const tubes  = parseInt(document.getElementById('sale-tubes').value) || 1;
+  const amount = parseFloat(document.getElementById('sale-amount').value);
+  if (!date || !buyer) { showToast('Enter date and buyer'); return; }
+  if (isNaN(amount) || amount < 0) { showToast('Enter a valid amount'); return; }
+  setLoading(true);
+  try {
+    const rows = await sb('shuttle_sales', 'POST', { date, buyer, tubes, amount });
+    S.shuttleSales = S.shuttleSales || [];
+    S.shuttleSales.unshift({ id: rows[0].id, date, buyer, tubes, amount });
+    closeModal('m-sale');
+    renderShuttles();
+    showToast(tubes + ' tube'+(tubes>1?'s':'')+' sold to ' + buyer + ' ✓');
+  } catch(e) { showToast('Error saving sale'); }
+  setLoading(false);
+}
+
+async function doDeleteSale(id) {
+  setLoading(true);
+  try {
+    await sb('shuttle_sales?id=eq.' + id, 'DELETE');
+    S.shuttleSales = S.shuttleSales.filter(s => s.id !== id);
+    renderShuttles();
+    showToast('Sale removed');
+  } catch(e) { showToast('Error'); }
+  setLoading(false);
 }
 
 async function saveUsage() {
