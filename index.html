@@ -2279,6 +2279,58 @@ async function setCasualFee(fee) {
   }
 }
 
+async function markGuestPaid(guestId, quarter, amount) {
+  setLoading(true);
+  try {
+    const payload = {
+      member_id: guestId,
+      quarter,
+      amount,
+      date: new Date().toISOString().split('T')[0],
+      note: 'Guest payment',
+    };
+    const rows = await sb('casual_payments', 'POST', payload);
+    S.casualPayments.push(rows[0]);
+    renderFinance();
+    showToast('Marked as paid ✓');
+  } catch (e) {
+    showToast('Error marking as paid');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function openAddCredit(memberId, memberName) {
+  document.getElementById('credit-member-id').value = memberId;
+  document.getElementById('credit-member-name').textContent = memberName;
+  document.getElementById('credit-amount').value = '';
+  document.getElementById('credit-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('credit-note').value = '';
+  openModal('m-credit');
+}
+
+async function saveCasualCredit() {
+  const memberId = parseInt(document.getElementById('credit-member-id').value, 10);
+  const amount   = parseFloat(document.getElementById('credit-amount').value);
+  const date     = document.getElementById('credit-date').value;
+  const note     = document.getElementById('credit-note').value.trim();
+  if (!amount || amount <= 0) { showToast('Enter a valid amount'); return; }
+  if (!date) { showToast('Select a date'); return; }
+  setLoading(true);
+  try {
+    const payload = { member_id: memberId, quarter: dateToQuarter(date), amount, date, note };
+    const rows = await sb('casual_payments', 'POST', payload);
+    S.casualPayments.push(rows[0]);
+    closeModal('m-credit');
+    renderFinance();
+    showToast('Credit of A$' + amount.toFixed(2) + ' added ✓');
+  } catch (e) {
+    showToast('Error saving credit');
+  } finally {
+    setLoading(false);
+  }
+}
+
 async function savePin(context) {
   const input = document.getElementById('pin-'+context+'-new');
   const newPin = input.value.trim();
